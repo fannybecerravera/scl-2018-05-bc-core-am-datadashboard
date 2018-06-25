@@ -10,14 +10,18 @@ body {
 .logoLaboratoria {
   margin-left: 10px;
 }
+
 /* Los div con clase tag tomen el valor de la propiedad de su elemento padre*/
+
 .tag {
   margin: inherit;
   padding: inherit;
   display: inherit;
   max-height: inherit;
 }
+
 /*El div con class active y los que posean class tag y estan dentro de active tomen display block*/
+
 .active .tag {
   display: block;
 }
@@ -33,7 +37,8 @@ body {
 
 .tag input {
   margin: inherit;
-  padding: inherit;
+  padding-top: inherit;
+  padding-bottom: inherit;
   max-height: inherit;
   font-size: inherit;
   border: 0;
@@ -42,6 +47,7 @@ body {
 }
 
 /* Este class en una transición de 5s tomara estas popiedades esto hara que se escondan*/
+
 .whiteCard {
   background-color: white;
   max-height: 0;
@@ -114,35 +120,14 @@ body {
   box-sizing: border-box;
 }
 
-#myInput {
-  background-image: url('/css/searchicon.png');
+.search {
+  background-image: url('../img/searchicon.png');
+  background-color: rgb(235, 235, 235);
   background-position: 10px 12px;
   background-repeat: no-repeat;
-  width: 100%;
+  width: 98%;
   font-size: 16px;
   padding: 12px 20px 12px 40px;
-  border: 1px solid #ddd;
   margin-bottom: 12px;
-}
-
-#myUL {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-#myUL li a {
-  border: 1px solid #ddd;
-  margin-top: -1px;
-  /* Prevent double borders */
-  background-color: #f6f6f6;
-  padding: 12px;
-  text-decoration: none;
-  font-size: 18px;
-  color: black;
-  display: block
-}
-
-#myUL li a:hover:not(.header) {
-  background-color: #eee;
+  box-sizing: border-box;
 }

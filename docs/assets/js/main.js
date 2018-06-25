@@ -193,8 +193,8 @@ sites.forEach(site => {
       studentsFilter = document.createElement('input');
       studentsFilter.setAttribute('type', 'text');
       studentsFilter.setAttribute('id', 'input-' + cohort.id);
-      studentsFilter.setAttribute('placeholder', 'Filtrar ' + cohortName);
-      
+      studentsFilter.setAttribute('placeholder', 'Search');
+      studentsFilter.classList.add('search');
       studentsDiv.append(studentsFilter);
       cohortDiv.append(studentsDiv);
 

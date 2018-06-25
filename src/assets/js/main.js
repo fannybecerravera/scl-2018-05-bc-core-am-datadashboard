@@ -44,7 +44,7 @@ const loadUsers = (cohort, studentsDivId) => {
   let studentDiv;
   let progressDiv;
   const studentsDiv = document.getElementById(studentsDivId);
-  const filter = document.getElementById('input-' + cohort.id).value.toUpperCase().toUpperCase();
+  const filter = document.getElementById('input-' + cohort.id).value.toUpperCase();
 
   let fc = studentsDiv.getElementsByClassName('student').item(0);
 
@@ -53,9 +53,13 @@ const loadUsers = (cohort, studentsDivId) => {
     fc = studentsDiv.getElementsByClassName('student').item(0);
   }
   
+  // si cohort no tiene users
   if (!cohort.users) {
+    // busca las usuarias desde el API
     cohort.users = getData(`https://api.laboratoria.la/cohorts/${cohort.id}/users`);
+    // busca los progresos desde el API
     let progress = getData(`https://api.laboratoria.la/cohorts/${cohort.id}/progress`);
+    // une los progresos con sus respectivas usuarias a traves del metodo declarado en data.js
     cohort.users = computeUsersStats(cohort.users, progress, Object.keys(cohort.coursesIndex));
   }
   
@@ -78,8 +82,12 @@ const loadUsers = (cohort, studentsDivId) => {
   });
 };
 
+// ========================================================
+// se obtiene los tags desde el HTML
 const tags = document.getElementsByClassName('tag');
+// se obtiene el div que va a contener a los sites
 const sitesDiv = document.getElementById('sites');
+// se crean las variables que se van a usar para dibujar el HTML
 let siteDiv;
 let siteP;
 let generationsDiv;
@@ -107,7 +115,7 @@ if (req.status === 200) {
   JSON.parse(req.responseText).forEach(site => {
     // si el site esta activo
     if (site.active) {
-      // se crea un array vacio de generaciones para ir acumulandolos
+      // se crea un array vacio de generaciones para ir acumulando las generaciones
       site.generations = [];
       // agrega un objeto al array de site con el nombre y un conjunto donde se iran agegando las generaciones
       sites.push(site);
@@ -119,11 +127,11 @@ if (req.status === 200) {
 req.open('GET', 'https://api.laboratoria.la/cohorts', false);
 req.send(null);
 if (req.status === 200) {
-  //split elimina el guion del id
   let siteId;
   let year;
   // parsea json que viene como string dentro de responseText y recorre los cohorts
   JSON.parse(req.responseText).forEach(cohort => {
+    // se obtiene el siteId a partir del cohort.id, split elimina el guion del id
     siteId = cohort.id.split('-')[0];
     year = cohort.id.split('-')[1];
     // para cada cohort recorre todos los sites antes creados
@@ -134,6 +142,7 @@ if (req.status === 200) {
         if (site.generations[year]) {
           site.generations[year].push(cohort);
         } else {
+          // si no hay un array ya creado para ese año se crea un array con ese cohort como unico elemento
           site.generations[year] = [cohort];
         }
       }
@@ -145,13 +154,15 @@ if (req.status === 200) {
 sites.forEach(site => {
   // se le asigna a siteP un nuevo elemento HTML del tipo parrafo
   siteP = document.createElement('p');
-  // al elemento creado se l agrega la clase 'icon-triangle-down'
+  // al elemento creado se le agrega la clase 'icon-triangle-down'
   siteP.classList.add('icon-triangle-down');
   // le agrega como ultimo hijo de P un nodo de texto con el nombre del site en mayuscula
   siteP.append(document.createTextNode(site.name.toUpperCase()));
-
+  // se crea un div para contener al site
   siteDiv = document.createElement('div');
+  // al elemento creado se le agrega las clases site y tag
   siteDiv.classList.add('site', 'tag');
+  // se agrega como ultimo hijo de div al siteP
   siteDiv.append(siteP);
 
   generationsDiv = document.createElement('div');
@@ -188,26 +199,30 @@ sites.forEach(site => {
 
       studentsDiv = document.createElement('div');
       studentsDiv.classList.add('students', 'whiteCard');
+      // a studentsDiv se le asigna  un id para poder ser bucado luego cuando se carga las students
       studentsDiv.id = 'students-' + cohort.id;
+
 
       studentsFilter = document.createElement('input');
       studentsFilter.setAttribute('type', 'text');
       studentsFilter.setAttribute('id', 'input-' + cohort.id);
-      studentsFilter.setAttribute('placeholder', 'Filtrar ' + cohortName);
-      
+      studentsFilter.setAttribute('placeholder', 'Search');
+      studentsFilter.classList.add('search');
       studentsDiv.append(studentsFilter);
       cohortDiv.append(studentsDiv);
-
+      // se agrega un compotamiento al click del filtro para evitar la propagacion del evento a la estudiantes que estan por detras
       studentsFilter.addEventListener('click', (event) => {
         event.stopPropagation();
       });
-      studentsFilter.addEventListener('keyup', () => {
-        loadUsers(cohort, 'students-' + cohort.id);
-      });
+      // al hacer click en el cohort ademas de desplegar las students se carga las mismas desde el API
       cohortDiv.addEventListener('click', () => {
         loadUsers(cohort, 'students-' + cohort.id);
       });
-
+      // al escribir en el filtro se llama a loadUsers
+      studentsFilter.addEventListener('keyup', () => {
+        loadUsers(cohort, 'students-' + cohort.id);
+      });
+      // se agrega el cohort a la lista de cohort
       cohortsDiv.append(cohortDiv);
     });
   });
