@@ -30,6 +30,17 @@ body {
   font-family: 'Open Sans', sans-serif;
   font-weight: bold;
 }
+
+.tag input {
+  margin: inherit;
+  padding: inherit;
+  max-height: inherit;
+  font-size: inherit;
+  border: 0;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: bold;
+}
+
 /* Este class en una transición de 5s tomara estas popiedades esto hara que se escondan*/
 .whiteCard {
   background-color: white;

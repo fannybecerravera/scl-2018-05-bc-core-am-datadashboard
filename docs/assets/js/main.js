@@ -44,30 +44,38 @@ const loadUsers = (cohort, studentsDivId) => {
   let studentDiv;
   let progressDiv;
   const studentsDiv = document.getElementById(studentsDivId);
-  
-  if (studentsDiv.children.length === 0) {
-    let users = getData(`https://api.laboratoria.la/cohorts/${cohort.id}/users`);
-    let progress = getData(`https://api.laboratoria.la/cohorts/${cohort.id}/progress`);
-    
-    users = computeUsersStats(users, progress, Object.keys(cohort.coursesIndex));
-    users.forEach((student) => {
-      if (student.role === 'student') {
-        studentP = document.createElement('p');
-        studentP.append(document.createTextNode(student.name + ' ' + student.stats.percent + '%'));
-    
-        progressDiv = document.createElement('div');
-        progressDiv.classList.add('studentProgress');
-        progressDiv.style.width = student.stats.percent + '%';
-        
-        studentDiv = document.createElement('div');
-        studentDiv.classList.add('student', 'tag');
-        studentDiv.append(studentP);
-        studentDiv.append(progressDiv);
-    
-        studentsDiv.append(studentDiv);        
-      }
-    });
+  const filter = document.getElementById('input-' + cohort.id).value.toUpperCase().toUpperCase();
+
+  let fc = studentsDiv.getElementsByClassName('student').item(0);
+
+  while (fc) {
+    studentsDiv.removeChild(fc);
+    fc = studentsDiv.getElementsByClassName('student').item(0);
   }
+  
+  if (!cohort.users) {
+    cohort.users = getData(`https://api.laboratoria.la/cohorts/${cohort.id}/users`);
+    let progress = getData(`https://api.laboratoria.la/cohorts/${cohort.id}/progress`);
+    cohort.users = computeUsersStats(cohort.users, progress, Object.keys(cohort.coursesIndex));
+  }
+  
+  cohort.users.forEach((student) => {
+    if (student.role === 'student' && student.name.toUpperCase().indexOf(filter) >= 0) {
+      studentP = document.createElement('p');
+      studentP.append(document.createTextNode(student.name + ' ' + student.stats.percent + '%'));
+  
+      progressDiv = document.createElement('div');
+      progressDiv.classList.add('studentProgress');
+      progressDiv.style.width = student.stats.percent + '%';
+      
+      studentDiv = document.createElement('div');
+      studentDiv.classList.add('student', 'tag');
+      studentDiv.append(studentP);
+      studentDiv.append(progressDiv);
+  
+      studentsDiv.append(studentDiv);        
+    }
+  });
 };
 
 const tags = document.getElementsByClassName('tag');
@@ -82,6 +90,7 @@ let cohortDiv;
 let cohortP;
 let cohortName;
 let studentsDiv;
+let studentsFilter;
 let idAlumnas;
 
 // objeto que se encarga de hacer los llamados al API
@@ -181,8 +190,20 @@ sites.forEach(site => {
       studentsDiv.classList.add('students', 'whiteCard');
       studentsDiv.id = 'students-' + cohort.id;
 
+      studentsFilter = document.createElement('input');
+      studentsFilter.setAttribute('type', 'text');
+      studentsFilter.setAttribute('id', 'input-' + cohort.id);
+      studentsFilter.setAttribute('placeholder', 'Filtrar ' + cohortName);
+      
+      studentsDiv.append(studentsFilter);
       cohortDiv.append(studentsDiv);
 
+      studentsFilter.addEventListener('click', (event) => {
+        event.stopPropagation();
+      });
+      studentsFilter.addEventListener('keyup', () => {
+        loadUsers(cohort, 'students-' + cohort.id);
+      });
       cohortDiv.addEventListener('click', () => {
         loadUsers(cohort, 'students-' + cohort.id);
       });
